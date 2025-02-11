@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block main_content %}
+    <form action="" class="flex-column ai-center gap-10 bdr bdr-rad-20 pd-16" method="POST">
+        {{ form.csrf_token }}
+        <legend class="h3">{{ exam.title }}</legend>
+        <div>
+            {% for field in form.fields %}
+                <div class="mb-10">
+                    {{ field(class="input-field") }}
+                </div>
+            {% endfor %}
+        </div>
+        {{ form.submit(class="btn w-100p m-0") }}
+    </form>
+{% endblock main_content%}
+{% block scripts_block %}
+{% endblock scripts_block %}

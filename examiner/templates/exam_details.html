@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block main_content %}
+    {% for label, value in exam_details.items() %}
+        <div class="exam-detail-item">
+            <span class="ed-label">{{ label|capitalize }}</span><span class="ed-value">{{ value }}</span>
+        </div>
+    {% endfor %}
+    {% if current_user.exam_ongoing %}
+        <a class="td-none" href="{{ url_for('questions') }}">
+            <button class="btn">continue exam</button>
+        </a>
+    {% elif current_user.exam_ongoing == false %}
+        <h2>Your exam has ended</h2>
+        <a class="td-none" href="{{ url_for('exam_result') }}">
+            <button id="view-result-btn" class="btn">view result</button>
+        </a>
+    {% elif current_user.exam_ongoing == none %}
+        <button id="start-exam-btn" class="btn">start exam</button>
+    {% endif %}
+{% endblock main_content%}
+{% block scripts_block %}
+<script>
+    document.getElementById('start-exam-btn').addEventListener('click', () => {
+        if (confirm('Start {{ exam.title }}?')){
+            const xhr = new XMLHttpRequest();
+			xhr.open(
+				"POST",
+			    "{{ url_for('on_exam_start') }}",
+				true
+			);
+
+			xhr.onload = function () {
+                if (this.status === 200) {
+                    console.log(this.responseText);
+                    if (this.responseText) {
+                        window.location.href = `{{ url_for('questions') }}`;
+                    }
+                }
+			};
+
+			xhr.send();
+        }
+    })
+</script>
+{% endblock scripts_block %}

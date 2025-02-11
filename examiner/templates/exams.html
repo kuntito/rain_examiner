@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block main_content %}
+	{% if exams %}
+		<div class="flex-column ai-center size-100p">
+			<h2>Exams</h2>
+			<div id="exam-item-container" class="flex-column gap-10">
+				{% for exam in exams %}
+					<div class="mb-20">
+						<a href="{{ url_for('exam_login', exam_id=exam.id) }}">
+							<div id="exam-title" class="h3 center-text">{{ exam.title }}</div>
+						</a>
+						<div class="h4 center-text">{{ exam.participant_class }}</div>
+						<div class="h4 center-text">{{ exam.participant_cohort }}</div>
+					</div>
+				{% endfor %}
+			</div>
+		</div>
+	{% else %}
+		<h1>No exams available</h1>
+	{% endif %}
+{% endblock main_content%}

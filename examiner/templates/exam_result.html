@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block main_content %}
+    {% if score is none %}
+        <h2 class="center-text">Result unavailable</h2>
+    {% else %}
+        <h2 class="center-text td-udl mb-10">{{ exam.title }}</h2>
+        <h2 class="center-text">Your scored {{score}}/{{exam.questions|length}}</h3>
+        <div class="pd-16">
+            {% for review_detail in question_review_details %}
+                <div class="h3 mb-30">
+                    <div class="fnt-wt-b mb-10">Question {{loop.index}}
+                        {% if review_detail.student_is_correct %}
+                            <img src="{{ url_for('static', filename='assets/ic_correct.png') }}" alt="">
+                        {% else %}
+                            <img src="{{ url_for('static', filename='assets/ic_wrong.png') }}" alt="">
+                        {% endif %}
+                    </div>
+                    <div class="h4">{{review_detail.question_text|safe}}</div>
+                    {% if not review_detail.student_is_correct %}
+                        <div class="fnt-wt-b m-10">Your answer</div>
+                        <div class="h4">
+                            {% if review_detail.your_answer|length == 0 %}
+                                <i>no answer selected</i>
+                            {% else %}
+                                {{review_detail.your_answer|safe}}
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                    <div class="fnt-wt-b m-0">Correct answer</div>
+                    <div class="h4">{{review_detail.correct_answer|safe}}</div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endblock main_content%}
+{% block scripts_block %}
+{% endblock scripts_block %}

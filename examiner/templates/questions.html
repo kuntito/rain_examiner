@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% block main_content %}
+    <div class="question-container size-100p pos-rel">
+        <div class="question-details">
+            <div id="question-header-container"></div>
+            <div id="question-options-container"></div>
+        </div>
+        <div id="question-nav-buttons" class="question-nav-buttons flex-row jc-center gap-10"></div>
+        <div>
+            <div class="flex-column ai-center">
+                <div class="timer-container">
+                    <img src="{{ url_for('static', filename='assets/icon-timer.png') }}" alt="">
+                    <h4 id="timer">.</h4>
+                </div>
+                <a href="{{ url_for('questions_grid') }}">
+                    <img src="{{ url_for('static', filename='assets/ic_grid_view.svg') }}" alt="">
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endblock main_content %}
+    {% block scripts_block %}
+    <script>
+        const _CURRENT_QUESTION_INDEX = "{{current_user.id|upper}}_{{current_user.id_exam_logged_in}}_CURRENT_INDEX";
+        const _examDuration = Number('{{exam.duration}}');
+        const _examId = '{{exam.id}}'
+        
+        // the [questions] variable received from the server is a json string so it has to be parsed to a json object
+        // flask reads quotes ("") as html entities i.e &#34; so the '|tojson' filter is used to change them to actual quotes
+        // for some reason the terminating braces of the json string are preceeded with quotes
+        // if it isn't removed the js engine throws a SyntaxError
+        const _questions = JSON.parse('{{questions|tojson}}'.replace(/"{/g, '{').replace(/}"/g, '}'));
+        const _onExamEndUrl = '{{ url_for("on_exam_end") }}'
+        const _examDetailsUrl = '{{ url_for("exam_details") }}'
+        const _onOptionSelectedUrl = '{{ url_for("on_option_selected") }}'
+
+        function getStartTime(){
+            const xhr = new XMLHttpRequest();
+            xhr.open(
+                "POST",
+                "{{url_for('current_user_exam_start_time')}}",
+                false
+            );
+            
+            xhr.send();
+
+            const startTime = Number(xhr.responseText);
+            console.log(`startTime received from server is ${startTime}`);
+            return startTime
+        }
+
+        function getNow() {
+            const xhr = new XMLHttpRequest();
+            xhr.open(
+                "POST",
+                "{{ url_for('now') }}",
+                false
+            );
+            
+            xhr.send();
+            
+            const now = Number(xhr.responseText);
+            console.log(`now received from server is ${now}`);
+            return now;
+        }
+        
+        function endExam() {
+            const xhr = new XMLHttpRequest();
+            xhr.open(
+                "POST",
+                _onExamEndUrl,
+                false
+            );
+            xhr.send();
+
+            window.location.href = _examDetailsUrl;
+        }
+    </script>
+    <script src="{{ url_for('static', filename='scripts/time_parser.js') }}"></script>
+    <script src="{{ url_for('static', filename='scripts/timer.js') }}"></script>
+    <script src="{{ url_for('static', filename='scripts/questions.js') }}"></script>
+{% endblock scripts_block %}
